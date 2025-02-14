@@ -1,0 +1,17 @@
+#map {
+  height: 750px;
+  width: 90%;
+  border-radius: 10px;
+}
+
+.map-container {
+  display: flex;
+  padding: 0 2rem 2rem 2rem;
+}
+
+.map-options-container {
+  display: flex;
+  margin-right: 10px;
+  border: 1px solid var(--p-menubar-border-color);
+  border-radius: 10px;
+}

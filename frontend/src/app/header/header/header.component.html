@@ -1,0 +1,14 @@
+<div class="card" data-testid="header-container">
+  <p-menubar [model]="menuItems()">
+    <ng-template #item let-menuitem>
+      <p-button [label]="menuitem.label"
+                [icon]="menuitem.icon"
+                severity="secondary"
+                variant="text"
+                (click)="menuitem.command?.()"
+                [routerLink]="menuitem.routerLink"
+                [attr.data-testid]="menuitem.testId">
+      </p-button>
+    </ng-template>
+  </p-menubar>
+</div>

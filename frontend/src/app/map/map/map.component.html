@@ -1,0 +1,13 @@
+<div class="map-container" data-testid="map-container">
+  <p-card header="Options" class="map-options-container" data-testid="map-options-container">
+    <p-button (onClick)="flyToMyLocation()" label="My Location" icon="pi pi-compass" severity="secondary" data-testid="map-options-fly-button"></p-button>
+  </p-card>
+  <div id="map" data-testid="map">
+  </div>
+</div>
+<app-add-city-dialog [visible]="cityStore.showAddCityDialogOptions().show"
+                     [markerMetadata]="cityStore.showAddCityDialogOptions().markerMetadata"
+                     (visibleChanged)="cityStore.setShowAddCityDialog(false)"
+                     (cityToSave)="cityStore.create($event)"
+></app-add-city-dialog>
+<app-city-list></app-city-list>

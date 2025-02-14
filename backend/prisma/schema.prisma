@@ -1,0 +1,23 @@
+datasource db {
+  provider = "sqlite"
+  url = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model City {
+  id Int @id @default(autoincrement())
+  title String
+  population Int
+  marker MarkerMetadata?
+}
+
+model MarkerMetadata {
+  id Int @id @default(autoincrement())
+  lat Decimal
+  lon Decimal
+  city City? @relation(fields: [cityId], references: [id])
+  cityId Int? @unique
+}

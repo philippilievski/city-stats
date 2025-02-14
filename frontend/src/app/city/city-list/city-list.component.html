@@ -1,0 +1,30 @@
+<div class="table-container">
+  <p-table [value]="cityStore.cities()">
+    <ng-template #header>
+      <tr>
+        <th>Title</th>
+        <th>Population</th>
+        <th>Location</th>
+        <th>Options</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-city>
+      <tr data-testid="tablerow-city-list">
+        <td>{{ city.title | titlecase }}</td>
+        <td>{{ city.population | number }}</td>
+        <td>
+          @if (city.marker) {
+            <p-button (click)="flyToLocation(city.marker)" severity="secondary" icon="pi pi-compass" size="small" />
+          }
+        </td>
+        <td>
+          <p-button (click)="cityStore.remove(city.id)"
+                    severity="danger"
+                    icon="pi pi-trash"
+                    size="small"
+                    data-testid="delete-button-city-list"/>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
