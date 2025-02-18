@@ -12,7 +12,6 @@ import {generateRandomRgba, generateRandomRgbaArray} from '../../utils/randomRGB
   ],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss',
-  providers: [CityStore]
 })
 export class StatsComponent implements OnInit {
   cityStore = inject(CityStore);

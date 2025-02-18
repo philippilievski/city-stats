@@ -14,11 +14,12 @@ export class EventService {
       const eventSource = new EventSource(apiUrl);
 
       eventSource.onmessage = (event) => {
-        console.log("event", event.data)
+        console.log(JSON.parse(event.data));
         observer.next(JSON.parse(event.data));
       };
 
       eventSource.onerror = (error) => {
+        console.log(error);
         observer.error(error);
       };
 

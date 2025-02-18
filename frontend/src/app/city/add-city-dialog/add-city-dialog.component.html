@@ -1,16 +1,18 @@
 <p-dialog header="Add City" [modal]="true" [visible]="visible()" (visibleChange)="onVisibleChanged($event)">
   <form [formGroup]="addCityForm">
-    <div>
+    <div class="add-city-input-container">
       <label for="username">Name</label>
       <input pInputText id="username" autocomplete="off" formControlName="title" />
     </div>
-    <div>
+    <div class="add-city-input-container">
       <label for="email">Population</label>
       <p-inputNumber id="email" autocomplete="off" formControlName="population" />
     </div>
   </form>
   <ng-template #footer>
-    <p-button label="Cancel" [text]="true" severity="secondary" (onClick)="onVisibleChanged(false)"></p-button>
-    <p-button label="Save" severity="primary" (onClick)="onSaveCity()"></p-button>
+    <div class="add-city-footer-container">
+      <p-button label="Cancel" severity="secondary" (onClick)="onVisibleChanged(false)"></p-button>
+      <p-button label="Save" severity="primary" (onClick)="onSaveCity()"></p-button>
+    </div>
   </ng-template>
 </p-dialog>

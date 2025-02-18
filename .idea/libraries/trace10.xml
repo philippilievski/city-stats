@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="trace10">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frontend/test-results/home-home-page-it-should-redirect-on-default-url-chromium/trace.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

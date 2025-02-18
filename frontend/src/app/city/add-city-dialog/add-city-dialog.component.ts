@@ -5,7 +5,7 @@ import {Button} from 'primeng/button';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CityPayload} from '../../data/city';
 import {InputNumber} from 'primeng/inputnumber';
-import {MarkerStore} from '../../map/stores/marker.store';
+import {MarkerStore} from '../../marker/stores/marker.store';
 import {MarkerMetadata} from '../../data/marker-metadata';
 
 @Component({
@@ -22,7 +22,6 @@ import {MarkerMetadata} from '../../data/marker-metadata';
 })
 export class AddCityDialogComponent {
   formBuilder = new FormBuilder();
-  markerStore = inject(MarkerStore);
 
   visible = model<boolean>(false);
   markerMetadata = input<MarkerMetadata>();

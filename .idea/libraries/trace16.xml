@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="trace16">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frontend/test-results/map-map-tests-map-should-be-visible-chromium/trace.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

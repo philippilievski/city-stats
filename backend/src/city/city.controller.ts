@@ -11,8 +11,12 @@ export interface CityPayload {
 
 @Controller('city')
 export class CityController {
-    constructor(private readonly cityService: CityService,
-                private readonly sseService: SseService) {
+    constructor(private readonly cityService: CityService) {
+    }
+
+    @Delete('/all')
+    removeAll() {
+        return this.cityService.removeAll();
     }
 
     @Delete(':id')
@@ -31,9 +35,8 @@ export class CityController {
     }
 
     @Post('/event/distribute-city')
-    async distributeCity(@Body() data: { title: string }) {
-        console.log(data.title);
-        await this.cityService.distributeCityName(data.title);
+    async distributeCity(@Body() city: City) {
+        await this.cityService.distributeCity(city);
         return { status: 'Message sent to Kafka' };
     }
 

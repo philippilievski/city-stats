@@ -1,8 +1,8 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Sse} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post} from '@nestjs/common';
 import {MarkerMetadata, Prisma} from "@prisma/client";
 import {MarkerService} from "./marker.service";
-import {Observable} from "rxjs";
 import {SseService} from "../events/sse/sse.service";
+import {KafkaApiEvent} from "../kafka/kafka/kafka.service";
 
 @Controller('marker')
 export class MarkerController {
@@ -21,15 +21,19 @@ export class MarkerController {
         return this.markerService.create(marker);
     }
 
+    @Delete('/all')
+    removeAll() {
+        return this.markerService.removeAll();
+    }
+
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.markerService.remove(id);
     }
 
     @Post('/event/')
-    async distributeCity(@Body() markerMetadata: MarkerMetadata ) {
-        console.log(markerMetadata);
-        await this.markerService.distributeMarkerMetadata(markerMetadata);
-        return { status: 'Message sent to Kafka' };
+    async distributeCity(@Body() data: { markerMetadata: MarkerMetadata, event: KafkaApiEvent }) {
+        await this.markerService.distributeMarkerMetadata(data.markerMetadata, data.event);
+        return {status: 'Message sent to Kafka'};
     }
 }

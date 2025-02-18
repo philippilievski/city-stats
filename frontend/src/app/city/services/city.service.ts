@@ -25,7 +25,11 @@ export class CityService {
     return this.http.get<City[]>(`${this.apiUrl}`);
   }
 
-  distributeCityTitle(title: string) {
-    return this.http.post<string>(`${this.apiUrl}/event/distribute-city`, { title });
+  deleteAll(): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/all`)
+  }
+
+  distributeCity(city: City) {
+    return this.http.post<string>(`${this.apiUrl}/event/distribute-city`,city );
   }
 }

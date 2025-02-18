@@ -2,44 +2,73 @@ import {Injectable} from '@nestjs/common';
 import {Consumer, Kafka, Producer} from 'kafkajs';
 import {SseService} from "../../events/sse/sse.service";
 
+export type KafkaApiEvent = 'create' | 'delete';
+
 @Injectable()
 export class KafkaService {
     kafka: Kafka;
     producer: Producer;
-    consumer: Consumer;
+    cityConsumer: Consumer;
+    markerConsumer: Consumer;
 
     constructor(private readonly sseService: SseService) {
         this.kafka = new Kafka({
             clientId: 'my-app',
             brokers: ['localhost:9092']
         });
+
         this.producer = this.kafka.producer();
-        this.consumer = this.kafka.consumer({ groupId: 'my-group' });
+        this.cityConsumer = this.kafka.consumer({ groupId: 'city-group' });
+        this.markerConsumer = this.kafka.consumer({ groupId: 'marker-group' });
     }
 
     async connect() {
+        const admin = this.kafka.admin();
+        await admin.connect();
+        const topicMetadata = await admin.listTopics();
+
+        if (!topicMetadata.includes('cities')) {
+            await admin.createTopics({ topics: [{ topic: 'cities', numPartitions: 3 }] });
+        }
+        if (!topicMetadata.includes('markers')) {
+            await admin.createTopics({ topics: [{ topic: 'markers', numPartitions: 3 }] });
+        }
+        await admin.disconnect();
+
         await this.producer.connect();
-        await this.consumer.connect();
+        await this.cityConsumer.connect();
+        await this.markerConsumer.connect();
 
-        await this.consumer.subscribe({ topic: 'cities', fromBeginning: true });
-        await this.consumer.subscribe({ topic: 'markers', fromBeginning: true });
+        await this.cityConsumer.subscribe({ topic: 'cities', fromBeginning: true });
+        await this.markerConsumer.subscribe({ topic: 'markers', fromBeginning: true });
 
-        await this.consumer.run({
+        await this.cityConsumer.run({
             eachMessage: async ({ topic, partition, message }) => {
                 if(message.value){
                     const msg = JSON.parse(message.value.toString());
-                    this.sseService.emitEvent({ data: { message: msg, topic} })
+                    console.log("Consumer receiving", msg);
+                    this.sseService.emitEvent({ data: { message: msg, topic} });
+                }
+            },
+        });
+
+        await this.markerConsumer.run({
+            eachMessage: async ({ topic, partition, message }) => {
+                if(message.value){
+                    const msg = JSON.parse(message.value.toString());
+                    console.log("Consumer receiving", msg);
+                    this.sseService.emitEvent({ data: { message: msg, topic} });
                 }
             },
         });
     }
 
-    async sendMessage<T>(topic: string, message: T) {
-        const data = JSON.stringify(message);
-        console.log("Producer sending: ", data);
+    async sendMessage<T>(topic: string, data: T, event?: KafkaApiEvent) {
+        const message = JSON.stringify({data, event});
+        console.log("Producer sending: ", message);
         await this.producer.send({
             topic,
-            messages: [{ value: data }],
+            messages: [{ value: message }],
         });
     }
 }

@@ -17,7 +17,7 @@ import {LatLng} from 'leaflet';
     TitleCasePipe
   ],
   templateUrl: './city-list.component.html',
-  styleUrl: './city-list.component.scss'
+  styleUrl: './city-list.component.scss',
 })
 export class CityListComponent implements OnInit{
   cityStore = inject(CityStore);

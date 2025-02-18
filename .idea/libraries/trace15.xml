@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="trace15">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frontend/test-results/marker-marker-tests-it-should-add-a-marker-on-click-firefox/trace.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -25,14 +25,16 @@ const initialState: CityState = {
 }
 
 export const CityStore = signalStore(
+  { providedIn: 'root' },
   withState(initialState),
   withMethods((store, cityService = inject(CityService)) => {
     const findAll = rxMethod<void>(
       pipe(
         switchMap(() => {
-          return cityService.findAll().pipe(
-            tap((cities) => patchState((store), {cities}))
-          )
+          return cityService.findAll()
+        }),
+        tap((cities) => {
+          patchState((store), {cities})
         })
       )
     );
@@ -43,7 +45,7 @@ export const CityStore = signalStore(
           return cityService.create(cityPayload);
         }),
         switchMap((city: City) => {
-          return cityService.distributeCityTitle(city.title)
+          return cityService.distributeCity(city)
         }),
         tap(() => findAll()),
       )
@@ -58,11 +60,20 @@ export const CityStore = signalStore(
       )
     );
 
+    const removeAll = rxMethod<void>(
+      pipe(
+        switchMap(() => {
+          return cityService.deleteAll();
+        }),
+        tap(() => findAll())
+      )
+    )
+
     const setShowAddCityDialog = (show: boolean, markerMetadata?: MarkerMetadata) =>  {
       patchState(store, (state) => ({ showAddCityDialogOptions: { show, markerMetadata } }));
     };
 
-    const addIfNotPresent = (city: City) => {
+    const patchUnique = (city: City) => {
       patchState(store, (state) => ({ cities: [...state.cities, city] }))
     };
 
@@ -70,7 +81,8 @@ export const CityStore = signalStore(
       findAll,
       create,
       remove,
-      addIfNotPresent,
+      removeAll,
+      patchUnique,
       setShowAddCityDialog,
     }
   }),

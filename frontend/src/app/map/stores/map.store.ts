@@ -4,19 +4,23 @@ import * as Leaflet from "leaflet";
 import {LatLng, LeafletMouseEvent, Map, Marker} from "leaflet";
 import {MapService} from '../map/map.service';
 import {effect, inject} from '@angular/core';
-import {MarkerStore} from './marker.store';
-import {CreateMarkerMetadataDTO, MarkerMetadata} from '../../data/marker-metadata';
+import {MarkerStore} from '../../marker/stores/marker.store';
+import {
+  CreateMarkerMetadataDTO,
+  MarkerMetadata,
+  MarkerWithMarkerMetadata
+} from '../../data/marker-metadata';
 import {CityStore} from './city.store';
 
 type MapState = {
   map: Map;
   userLocation: Location;
-  markersOnMap: Marker[];
+  markersOnMapWithMetadata: MarkerWithMarkerMetadata[];
 };
 
 const initialState: MapState = {
   map: {} as Map,
-  markersOnMap: [],
+  markersOnMapWithMetadata: [],
   userLocation: {
     lat: 0,
     lon: 0
@@ -24,6 +28,7 @@ const initialState: MapState = {
 };
 
 export const MapStore = signalStore(
+  {providedIn: 'root'},
   withState(initialState),
   withMethods((store, mapService = inject(MapService), markerStore = inject(MarkerStore), cityStore = inject(CityStore)) => ({
     setMap(map: Map): void {
@@ -39,11 +44,11 @@ export const MapStore = signalStore(
         markerStore.create(markerMetadata);
       });
     },
-    addMarkerToMap(marker: Marker, markerMetadata: MarkerMetadata): void {
-      patchState(store, (state) => ({markersOnMap: [...state.markersOnMap, marker]}));
-
+    addMarkerToMap(markerWithMarkerMetadata: MarkerWithMarkerMetadata): void {
+      const { marker, markerMetadata } = markerWithMarkerMetadata;
+      patchState(store, (state) => ({markersOnMapWithMetadata: [...state.markersOnMapWithMetadata, markerWithMarkerMetadata]}))
       const icon = Leaflet.divIcon({
-        className: 'custom-div-icon', // optional if you want to style it
+        className: 'custom-div-icon',
         html: `
           <div data-testid="test-icon">
             <img
@@ -65,19 +70,20 @@ export const MapStore = signalStore(
       });
 
       marker.on('contextmenu', (event: LeafletMouseEvent) => {
-        this.removeMarkerFromMap(marker);
+        this.removeMarkerFromMap({marker, markerMetadata});
         markerStore.remove(markerMetadata.id);
       });
 
       marker.on('mouseover', (event: LeafletMouseEvent) => {
-        if(markerMetadata.city){
+        if (markerMetadata.city) {
           marker.bindTooltip(markerMetadata.city.title);
         }
       });
     },
-    removeMarkerFromMap(marker: Marker): void {
-      patchState(store, (state) => ({markersOnMap: state.markersOnMap.filter((m) => m !== marker)}));
+    removeMarkerFromMap(markerWithMarkerMetadata: MarkerWithMarkerMetadata): void {
+      const { marker, markerMetadata } = markerWithMarkerMetadata;
       marker.remove();
+      patchState(store, (state) => ({markersOnMapWithMetadata: state.markersOnMapWithMetadata.filter((markersOnMap) => markersOnMap.markerMetadata.id !== markerMetadata.id)}));
     },
     setUserLocation(location: Location): void {
       patchState(store, (state) => ({userLocation: location}))
@@ -104,15 +110,24 @@ export const MapStore = signalStore(
 
       effect(() => {
         const markerMetadataList = markerStore.markerMetadataList();
-        const filteredData = markerMetadataList.filter(mml => !oldMarkerMetadataList.some(o => o.id === mml.id))
+        const removedMarkerMetadata = oldMarkerMetadataList.filter(oldMarkerMetadata => !markerMetadataList.some(markerMetadata => markerMetadata.id === oldMarkerMetadata.id));
+        const newMarkerMetadata = markerMetadataList.filter(markerMetadata => !oldMarkerMetadataList.some(oldMarkerMetadata => oldMarkerMetadata.id === markerMetadata.id));
+
         oldMarkerMetadataList = [...markerMetadataList];
 
-        filteredData.forEach((markerMetadata) => {
+        newMarkerMetadata.forEach((markerMetadata) => {
           const latLng: LatLng = Leaflet.latLng({lat: markerMetadata.lat, lng: markerMetadata.lon})
           const marker: Marker = Leaflet.marker(latLng);
 
-          store.addMarkerToMap(marker, markerMetadata);
+          store.addMarkerToMap({marker, markerMetadata});
         });
+
+        removedMarkerMetadata.forEach((markerMetadata) => {
+          const markerWithMarkerMetadata = store.markersOnMapWithMetadata().find((m) => m.markerMetadata.id === markerMetadata.id);
+          if(markerWithMarkerMetadata) {
+            store.removeMarkerFromMap(markerWithMarkerMetadata);
+          }
+        })
       });
     }
   })

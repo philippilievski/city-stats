@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {City} from '@prisma/client';
+import {City, Prisma} from '@prisma/client';
 import {PrismaService} from "../services/prisma/prisma.service";
 import {CityPayload} from "./city.controller";
 import {KafkaService} from "../kafka/kafka/kafka.service";
@@ -41,8 +41,12 @@ export class CityService {
         });
     }
 
-    async distributeCityName(title: string) {
-        await this.kafkaService.sendMessage<string>('cities', title);
+    removeAll(): Promise<Prisma.BatchPayload> {
+        return this.prisma.city.deleteMany();
+    }
+
+    async distributeCity(city: City) {
+        await this.kafkaService.sendMessage<City>('cities', city);
     }
 }
 

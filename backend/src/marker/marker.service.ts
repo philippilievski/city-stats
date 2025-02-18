@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {PrismaService} from "../services/prisma/prisma.service";
 import {MarkerMetadata, Prisma} from "@prisma/client";
-import {KafkaService} from "../kafka/kafka/kafka.service";
+import {KafkaApiEvent, KafkaService} from "../kafka/kafka/kafka.service";
 
 @Injectable()
 export class MarkerService {
@@ -9,7 +9,7 @@ export class MarkerService {
                 private readonly kafkaService: KafkaService) {
     }
 
-    findAll(): Promise<MarkerMetadata[]> {
+    async findAll(): Promise<MarkerMetadata[]> {
         return this.prisma.markerMetadata.findMany({
             include: {
                 city: true
@@ -29,7 +29,11 @@ export class MarkerService {
         })
     };
 
-    async distributeMarkerMetadata(markerMetadata: MarkerMetadata) {
-        await this.kafkaService.sendMessage<MarkerMetadata>('markers', markerMetadata);
+    removeAll(): Promise<Prisma.BatchPayload> {
+        return this.prisma.markerMetadata.deleteMany();
+    }
+
+    async distributeMarkerMetadata(markerMetadata: MarkerMetadata, event: KafkaApiEvent) {
+        await this.kafkaService.sendMessage<MarkerMetadata>('markers', markerMetadata, event);
     }
 }

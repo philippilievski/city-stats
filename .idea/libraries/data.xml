@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="data">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frontend/playwright-report/data/0387f9cd517403da973fc9ed45c50d648be4c17e.zip!/" />
+      <root url="jar://$PROJECT_DIR$/frontend/playwright-report/data/3cf134d2728ac3bebeeb283e81cbc0619ae89ea8.zip!/" />
+      <root url="jar://$PROJECT_DIR$/frontend/playwright-report/data/b6a9ea45212fd148d6909160227f05510115f4fe.zip!/" />
+      <root url="jar://$PROJECT_DIR$/frontend/playwright-report/data/1ef9c69fa1d7f1b72fa806a376ca5972529d54bd.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

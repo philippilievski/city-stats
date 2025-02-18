@@ -1,0 +1,16 @@
+.add-city-input-container {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+
+  input {
+    width: 100%;
+  }
+}
+
+.add-city-footer-container {
+  display: flex;
+  gap: 1rem;
+}

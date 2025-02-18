@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="trace24">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frontend/test-results/marker-marker-tests-it-should-show-markers-on-the-map-chromium/trace.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
